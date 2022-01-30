@@ -1,10 +1,8 @@
 from gensim import corpora, models, similarities
 import jieba
-
-from gensim.parsing.preprocessing import preprocess_string, lower_to_unicode, preprocess_documents, remove_stopwords, remove_short_tokens, split_alphanum, strip_multiple_whitespaces, strip_tags
-from gensim.utils import deaccent, decode_htmlentities, tokenize, trim_vocab_by_freq
+from gensim.parsing.preprocessing import preprocess_string, preprocess_documents, lower_to_unicode, remove_stopwords, remove_short_tokens, split_alphanum, strip_multiple_whitespaces, strip_tags
+from gensim.utils import deaccent, decode_htmlentities
 from hazm import *
-from numpy import outer
 
 f = open("dataset/marketing.txt", "r")
 # f = open("dataset/example.txt", "r")
@@ -65,7 +63,8 @@ def findSimilarity(keyword: str, texts: str, matchPercentage: float, dictionary)
 
 
 if __name__ == "__main__":
-    keyword = 'مشتری توزیع کننده خرده فروش است'
+    keyword = 'تلگرام فروش بازار کانال'
+    # keyword = 'آیا تلگرام برای فروش محصولات نرم افزاری مناسب است'
 
     f = open("dataset/marketing-preprocced.txt", "r")
     dictionary = FarsiPreprocessing(f.read())
@@ -75,4 +74,4 @@ if __name__ == "__main__":
     dataset = f.readlines()
     texts = [jieba.lcut(text) for text in dataset]
 
-    findSimilarity(keyword, texts, 0.8, dictionary)
+    findSimilarity(keyword, texts, 0.75, dictionary)

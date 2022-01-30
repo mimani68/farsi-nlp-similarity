@@ -4,15 +4,9 @@ from gensim.parsing.preprocessing import preprocess_string, preprocess_documents
 from gensim.utils import deaccent, decode_htmlentities
 from hazm import *
 
-f = open("dataset/marketing.txt", "r")
-# f = open("dataset/example.txt", "r")
-dataset = f.read()
-# dataset = f.readlines()
-
-f = open("farsi-stopword.txt", "r")
-STOP_WORDS = f.read().split()
-
 def FarsiPreprocessing(rawDocument):
+    f = open("farsi-stopword.txt", "r")
+    STOP_WORDS = f.read().split()
     tokenizedDocument = rawDocument.splitlines()
     output = ''
     for i in range(len(tokenizedDocument)):
@@ -42,12 +36,14 @@ def FarsiPreprocessing(rawDocument):
             tmp = normalizer.normalize(tokenizedDocument[i])
             tmp = stemmer.stem(tmp)
             tmp = lemmatizer.lemmatize(tmp)
-            # print(tmp)
             output += '\n' + tmp
+    f = open("dataset/marketing-preprocced.txt", "w")
+    f.write(output)
+    f.close()
     return output
 
 
-def findSimilarity(keyword: str, texts: str, matchPercentage: float, dictionary):
+def findSimilarity(keyword: str, texts: list, orginalText: str, matchPercentage: float, dictionary):
     dictionary = corpora.Dictionary(dictionary)
     feature_cnt = len(dictionary.token2id)
     corpus = [dictionary.doc2bow(text) for text in texts]
@@ -59,19 +55,19 @@ def findSimilarity(keyword: str, texts: str, matchPercentage: float, dictionary)
     for i in range(len(sim)):
         if sim[i] > matchPercentage:
             print('==== %.2f ===' % sim[i])
-            print(dataset[i])
+            print(orginalText[i])
 
 
 if __name__ == "__main__":
     keyword = 'تلگرام فروش بازار کانال'
     # keyword = 'آیا تلگرام برای فروش محصولات نرم افزاری مناسب است'
 
-    f = open("dataset/marketing-preprocced.txt", "r")
+    f = open("dataset/marketing.txt", "r")
     dictionary = FarsiPreprocessing(f.read())
     dictionary = [jieba.lcut(text) for text in dictionary.splitlines()]
 
     f = open("dataset/marketing.txt", "r")
     dataset = f.readlines()
-    texts = [jieba.lcut(text) for text in dataset]
+    vectorizedDocument = [jieba.lcut(text) for text in dataset]
 
-    findSimilarity(keyword, texts, 0.75, dictionary)
+    findSimilarity(keyword, vectorizedDocument, dataset, 0.8, dictionary)
